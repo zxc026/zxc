@@ -1,5 +1,6 @@
-from django.shortcuts import render, get_object_or_404
-from .models import CPU, Motherboard, GPU, RAM, Storage, PowerSupply
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import CPU, Motherboard, GPU, RAM, Storage, PowerSupply, Build
 
 
 def configurator(request):
@@ -33,11 +34,20 @@ def configurator(request):
         # 3. Проверка мощности блока питания
         total_power = cpu.tdp + (gpu.tdp if hasattr(gpu, 'tdp') else 150) + 50
         if psu.wattage < total_power:
-            errors.append(
-                f"⚠️ Блок питания ({psu.wattage} Вт) может не справиться с нагрузкой (~{total_power} Вт). Рекомендуется запас 20%.")
+            errors.append(f"⚠️ Блок питания ({psu.wattage} Вт) может не справиться с нагрузкой (~{total_power} Вт).")
 
-        # Полная стоимость
         total_price = cpu.price + mb.price + gpu.price + ram.price + storage.price + psu.price
+
+        # Сохраняем текущую сборку в сессии, чтобы потом её можно было сохранить
+        request.session['current_build'] = {
+            'cpu_id': cpu_id,
+            'mb_id': mb_id,
+            'gpu_id': gpu_id,
+            'ram_id': ram_id,
+            'storage_id': storage_id,
+            'psu_id': psu_id,
+            'total_price': float(total_price),
+        }
 
         context = {
             'cpus': CPU.objects.all(),
@@ -59,7 +69,7 @@ def configurator(request):
         }
         return render(request, 'builder/configurator.html', context)
 
-    else:  # GET-запрос
+    else:  # GET
         context = {
             'cpus': CPU.objects.all(),
             'motherboards': Motherboard.objects.all(),
@@ -80,7 +90,6 @@ def configurator(request):
 
 
 def catalog(request):
-    """Список всех компонентов по категориям"""
     context = {
         'cpus': CPU.objects.all(),
         'motherboards': Motherboard.objects.all(),
@@ -93,7 +102,6 @@ def catalog(request):
 
 
 def component_detail(request, model_type, pk):
-    """Детальная страница компонента"""
     models_map = {
         'cpu': CPU,
         'motherboard': Motherboard,
@@ -106,6 +114,72 @@ def component_detail(request, model_type, pk):
     if not model:
         from django.http import Http404
         raise Http404("Компонент не найден")
-
     component = get_object_or_404(model, id=pk)
     return render(request, 'builder/component_detail.html', {'component': component, 'type': model_type})
+
+
+def my_builds(request):
+    """Список сохранённых сборок пользователя (по сессии)"""
+    session_key = request.session.session_key
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+    builds = Build.objects.filter(session_key=session_key).order_by('-created_at')
+    return render(request, 'builder/my_builds.html', {'builds': builds})
+
+
+def save_build(request):
+    """Сохраняет текущую сборку из сессии в базу данных"""
+    if request.method == 'POST':
+        build_name = request.POST.get('build_name', 'Моя сборка')
+        current_build = request.session.get('current_build')
+        if not current_build:
+            messages.error(request, "Нет активной сборки для сохранения. Сначала соберите ПК.")
+            return redirect('configurator')
+
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+            session_key = request.session.session_key
+
+        # Создаём объект сборки
+        Build.objects.create(
+            session_key=session_key,
+            name=build_name,
+            cpu_id=current_build['cpu_id'],
+            motherboard_id=current_build['mb_id'],
+            gpu_id=current_build['gpu_id'],
+            ram_id=current_build['ram_id'],
+            storage_id=current_build['storage_id'],
+            psu_id=current_build['psu_id'],
+        )
+        messages.success(request, f"Сборка «{build_name}» успешно сохранена!")
+        return redirect('my_builds')
+    else:
+        return redirect('configurator')
+
+
+def load_build(request, build_id):
+    """Загружает сохранённую сборку в конфигуратор"""
+    session_key = request.session.session_key
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+
+    build = get_object_or_404(Build, id=build_id, session_key=session_key)
+    # Сохраняем в сессию текущую сборку
+    request.session['current_build'] = {
+        'cpu_id': build.cpu_id,
+        'mb_id': build.motherboard_id,
+        'gpu_id': build.gpu_id,
+        'ram_id': build.ram_id,
+        'storage_id': build.storage_id,
+        'psu_id': build.psu_id,
+    }
+    # Перенаправляем на конфигуратор – там подхватится из сессии
+    return redirect('configurator')
+
+
+def about(request):
+    """Страница 'О проекте'"""
+    return render(request, 'builder/about.html')

@@ -1,0 +1,38 @@
+{% extends "builder/base.html" %}
+{% block content %}
+
+<h1>Мои сборки</h1>
+
+{% if messages %}
+    {% for message in messages %}
+        <div style="background: #d1fae5; padding: 12px; border-radius: 20px; margin-bottom: 20px;">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+{% if builds %}
+    <div class="catalog-grid">
+        {% for build in builds %}
+        <div class="catalog-card" style="width: 300px;">
+            <h3>{{ build.name }}</h3>
+            <p style="font-size: 0.85rem; color: #64748b;">{{ build.created_at|date:"d.m.Y H:i" }}</p>
+            <ul style="margin: 12px 0; padding-left: 20px;">
+                <li>CPU: {{ build.cpu.name }}</li>
+                <li>MB: {{ build.motherboard.name }}</li>
+                <li>GPU: {{ build.gpu.name }}</li>
+                <li>RAM: {{ build.ram.name }}</li>
+                <li>Диск: {{ build.storage.name }}</li>
+                <li>БП: {{ build.psu.name }}</li>
+            </ul>
+            <a href="{% url 'load_build' build.id %}" class="btn-submit" style="display: block; text-align: center;">Загрузить сборку</a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="result-card" style="text-align: center; padding: 48px;">
+        <i class="fas fa-box-open" style="font-size: 3rem; color: #94a3b8;"></i>
+        <p style="margin-top: 16px;">У вас пока нет сохранённых сборок. Соберите ПК в конфигураторе и нажмите «Сохранить сборку».</p>
+        <a href="{% url 'configurator' %}" class="btn-submit" style="display: inline-block; margin-top: 20px;">Перейти в конфигуратор</a>
+    </div>
+{% endif %}
+
+{% endblock %}

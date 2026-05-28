@@ -1,15 +1,26 @@
 {% extends "builder/base.html" %}
 {% block content %}
-<div style="background: white; border-radius: 24px; padding: 24px;">
+
+<div class="detail-card">
     <h1>{{ component.name }}</h1>
     <p><strong>Тип:</strong> {{ type|upper }}</p>
     <p><strong>Цена:</strong> {{ component.price }} ₽</p>
+
     {% if component.socket %}<p><strong>Сокет:</strong> {{ component.socket }}</p>{% endif %}
     {% if component.form_factor %}<p><strong>Форм-фактор:</strong> {{ component.form_factor }}</p>{% endif %}
     {% if component.ram_type %}<p><strong>Тип RAM:</strong> {{ component.ram_type }}</p>{% endif %}
+    {% if component.ram_slots %}<p><strong>Слотов RAM:</strong> {{ component.ram_slots }}</p>{% endif %}
     {% if component.capacity_gb %}<p><strong>Объём:</strong> {{ component.capacity_gb }} ГБ</p>{% endif %}
+    {% if component.speed_mhz %}<p><strong>Частота:</strong> {{ component.speed_mhz }} МГц</p>{% endif %}
     {% if component.wattage %}<p><strong>Мощность:</strong> {{ component.wattage }} Вт</p>{% endif %}
+    {% if component.efficiency_rating %}<p><strong>Эффективность:</strong> {{ component.efficiency_rating }}</p>{% endif %}
     {% if component.tdp %}<p><strong>TDP:</strong> {{ component.tdp }} Вт</p>{% endif %}
-    <a href="{% url 'catalog' %}">← Назад в каталог</a>
+    {% if component.length_mm %}<p><strong>Длина:</strong> {{ component.length_mm }} мм</p>{% endif %}
+    {% if component.power_connectors %}<p><strong>Разъёмы питания:</strong> {{ component.power_connectors }}</p>{% endif %}
+    {% if component.storage_type %}<p><strong>Тип накопителя:</strong> {{ component.storage_type }}</p>{% endif %}
+    {% if component.interface %}<p><strong>Интерфейс:</strong> {{ component.interface }}</p>{% endif %}
+
+    <a href="{% url 'catalog' %}" class="btn-submit" style="display: inline-block; margin-top: 24px;">← Назад в каталог</a>
 </div>
+
 {% endblock %}

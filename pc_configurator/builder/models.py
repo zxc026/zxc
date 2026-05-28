@@ -52,3 +52,17 @@ class PowerSupply(models.Model):
     wattage = models.IntegerField(help_text="Мощность блока питания в Ваттах")
     efficiency_rating = models.CharField(max_length=10)  # Bronze, Gold, Platinum
     price = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Build(models.Model):
+    session_key = models.CharField(max_length=40, db_index=True, verbose_name="Ключ сессии")
+    name = models.CharField(max_length=100, default="Моя сборка", verbose_name="Название сборки")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    cpu = models.ForeignKey(CPU, on_delete=models.CASCADE, related_name='builds')
+    motherboard = models.ForeignKey(Motherboard, on_delete=models.CASCADE, related_name='builds')
+    gpu = models.ForeignKey(GPU, on_delete=models.CASCADE, related_name='builds')
+    ram = models.ForeignKey(RAM, on_delete=models.CASCADE, related_name='builds')
+    storage = models.ForeignKey(Storage, on_delete=models.CASCADE, related_name='builds')
+    psu = models.ForeignKey(PowerSupply, on_delete=models.CASCADE, related_name='builds')
+
+    def __str__(self):
+        return f"{self.name} ({self.created_at.strftime('%d.%m.%Y')})"

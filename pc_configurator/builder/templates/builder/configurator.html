@@ -1,473 +1,154 @@
-<!DOCTYPE html>
+{% extends "builder/base.html" %}
 {% load static %}
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конфигуратор ПК — собери свой игровой компьютер</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% block content %}
 
-        body {
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
-            background-image: url("{% static 'builder/images/bg.png' %}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #1e293b;
-        }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-            gap: 32px;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            font-size: 28px;
-            color: #3b82f6;
-        }
-
-        .logo-text {
-            font-weight: 700;
-            font-size: 1.4rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 28px;
-        }
-
-        .nav-links a {
-            color: #1e293b;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .nav-links a:hover {
-            color: #3b82f6;
-        }
-
-        .hero {
-            background: linear-gradient(130deg, #f8fafc 0%, #eff3f8 100%);
-            border-radius: 32px;
-            margin: 32px 0 40px;
-            padding: 48px 40px;
-            border: 1px solid #eef2f8;
-        }
-
-        .hero h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            color: #334155;
-            max-width: 700px;
-            margin-bottom: 24px;
-        }
-
-        .hero-badge {
-            display: inline-block;
-            background: #e0f2fe;
-            color: #0284c7;
-            border-radius: 40px;
-            padding: 6px 16px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .configurator-grid {
-            display: flex;
-            gap: 32px;
-            margin: 40px 0 60px;
-            flex-wrap: wrap;
-        }
-
-        .components-panel {
-            flex: 2;
-            min-width: 260px;
-        }
-
-        .result-panel {
-            flex: 1.2;
-            min-width: 280px;
-            position: sticky;
-            top: 100px;
-            align-self: flex-start;
-        }
-
-        .component-card {
-            background: white;
-            border-radius: 28px;
-            padding: 20px 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #edf2f7;
-        }
-
-        .component-card:hover {
-            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .card-header i {
-            font-size: 28px;
-            color: #3b82f6;
-            background: #eff6ff;
-            padding: 8px;
-            border-radius: 18px;
-        }
-
-        .card-header h3 {
-            font-size: 1.35rem;
-            font-weight: 600;
-        }
-
-        select {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 20px;
-            border: 1px solid #cbd5e1;
-            background: #fefefe;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #0f172a;
-            cursor: pointer;
-            transition: 0.2s;
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%233b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
-            background-repeat: no-repeat;
-            background-position: right 18px center;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
-        }
-
-        .result-card {
-            background: white;
-            border-radius: 28px;
-            padding: 24px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #edf2f7;
-        }
-
-        .total-price {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 16px 0;
-        }
-
-        .total-price span {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #475569;
-        }
-
-        .selected-list {
-            list-style: none;
-            margin: 20px 0;
-        }
-
-        .selected-list li {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid #eef2f8;
-        }
-
-        .selected-list i {
-            width: 28px;
-            color: #3b82f6;
-        }
-
-        .compat-success {
-            background: #ecfdf5;
-            color: #059669;
-            padding: 12px;
-            border-radius: 20px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .compat-error {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 12px;
-            border-radius: 20px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-
-        .compat-error ul {
-            margin: 0 0 0 20px;
-            padding: 0;
-        }
-
-        button.btn-submit {
-            width: 100%;
-            background: linear-gradient(100deg, #3b82f6, #2563eb);
-            border: none;
-            padding: 16px;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 16px;
-            box-shadow: 0 8px 18px -6px #3b82f680;
-        }
-
-        button.btn-submit:hover {
-            transform: scale(1.01);
-            background: linear-gradient(100deg, #2563eb, #1d4ed8);
-            box-shadow: 0 12px 22px -8px #2563eb;
-        }
-
-        footer {
-            text-align: center;
-            padding: 32px 0;
-            border-top: 1px solid #e2e8f0;
-            margin-top: 40px;
-            color: #64748b;
-        }
-
-        @media (max-width: 800px) {
-            .configurator-grid {
-                flex-direction: column;
-            }
-            .result-panel {
-                position: static;
-            }
-            .hero h1 {
-                font-size: 2rem;
-            }
-            .nav {
-                flex-direction: column;
-                gap: 12px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<div>
-    <div class="container">
-        <div class="nav">
-            <div class="logo-area">
-                <i class="fas fa-microchip logo-icon"></i>
-                <span class="logo-text">PC Craft</span>
-            </div>
-            <div class="nav-links">
-                <a href="{% url 'configurator' %}">Конфигуратор</a>
-                <a href="{% url 'catalog' %}">Каталог</a>
-                <a href="#">Акции</a>
-                <a href="#">Магазины</a>
-            </div>
-        </div>
-    </div>
+<div class="hero">
+    <div class="hero-badge"><i class="fas fa-gamepad"></i> Игровая сборка</div>
+    <h1>Собери свой Игровой ПК.</h1>
+    <p>Если вы никогда не собирали ПК — не беда. Наш конструктор проведет вас за руку: сам проверяет совместимость, подскажет, какие детали подойдут, и покажет примерную производительность в играх. Экспериментируйте и находите идеальный баланс без страха ошибиться.</p>
 </div>
 
-<div class="container">
-    <div class="hero">
-        <div class="hero-badge"><i class="fas fa-gamepad"></i> Игровая сборка</div>
-        <h1>Собери свой Игровой ПК.</h1>
-        <p>Если вы никогда не собирали ПК — не беда. Наш конструктор проведет вас за руку: сам проверяет совместимость, подскажет, какие детали подойдут, и покажет примерную производительность в играх. Экспериментируйте и находите идеальный баланс без страха ошибиться.</p>
-    </div>
-
-    <form method="post">
-        {% csrf_token %}
-        <div class="configurator-grid">
-            <div class="components-panel">
-                <!-- CPU -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-microchip"></i>
-                        <h3>Процессор (CPU)</h3>
-                    </div>
-                    <select name="cpu" required>
-                        <option value="" disabled selected>-- Выберите процессор --</option>
-                        {% for cpu in cpus %}
-                        <option value="{{ cpu.id }}" {% if selected.cpu.id == cpu.id %}selected{% endif %}>
-                            {{ cpu.name }} — {{ cpu.price }} ₽ (Socket: {{ cpu.socket }})
-                        </option>
-                        {% endfor %}
-                    </select>
+<form method="post">
+    {% csrf_token %}
+    <div class="configurator-grid">
+        <div class="components-panel">
+            <!-- CPU -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-microchip"></i>
+                    <h3>Процессор (CPU)</h3>
                 </div>
-
-                <!-- Материнская плата -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-server"></i>
-                        <h3>Материнская плата</h3>
-                    </div>
-                    <select name="motherboard" required>
-                        <option value="" disabled selected>-- Выберите материнскую плату --</option>
-                        {% for mb in motherboards %}
-                        <option value="{{ mb.id }}" {% if selected.mb.id == mb.id %}selected{% endif %}>
-                            {{ mb.name }} — {{ mb.price }} ₽ (Socket: {{ mb.socket }} | {{ mb.form_factor }})
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Видеокарта -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-tv"></i>
-                        <h3>Видеокарта (GPU)</h3>
-                    </div>
-                    <select name="gpu" required>
-                        <option value="" disabled selected>-- Выберите видеокарту --</option>
-                        {% for gpu in gpus %}
-                        <option value="{{ gpu.id }}" {% if selected.gpu.id == gpu.id %}selected{% endif %}>
-                            {{ gpu.name }} — {{ gpu.price }} ₽
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Оперативная память -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-memory"></i>
-                        <h3>Оперативная память</h3>
-                    </div>
-                    <select name="ram" required>
-                        <option value="" disabled selected>-- Выберите ОЗУ --</option>
-                        {% for ram in rams %}
-                        <option value="{{ ram.id }}" {% if selected.ram.id == ram.id %}selected{% endif %}>
-                            {{ ram.name }} ({{ ram.capacity_gb }} ГБ, {{ ram.ram_type }}) — {{ ram.price }} ₽
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Накопитель -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-hdd"></i>
-                        <h3>Накопитель</h3>
-                    </div>
-                    <select name="storage" required>
-                        <option value="" disabled selected>-- Выберите диск --</option>
-                        {% for storage in storages %}
-                        <option value="{{ storage.id }}" {% if selected.storage.id == storage.id %}selected{% endif %}>
-                            {{ storage.name }} ({{ storage.capacity_gb }} ГБ, {{ storage.storage_type }}, {{ storage.interface }}) — {{ storage.price }} ₽
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Блок питания -->
-                <div class="component-card">
-                    <div class="card-header">
-                        <i class="fas fa-bolt"></i>
-                        <h3>Блок питания</h3>
-                    </div>
-                    <select name="psu" required>
-                        <option value="" disabled selected>-- Выберите БП --</option>
-                        {% for psu in psus %}
-                        <option value="{{ psu.id }}" {% if selected.psu.id == psu.id %}selected{% endif %}>
-                            {{ psu.name }} ({{ psu.wattage }} Вт, {{ psu.efficiency_rating }}) — {{ psu.price }} ₽
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-submit">
-                    <i class="fas fa-calculator"></i> Рассчитать и проверить
-                </button>
+                <select name="cpu" required>
+                    <option value="" disabled selected>-- Выберите процессор --</option>
+                    {% for cpu in cpus %}
+                    <option value="{{ cpu.id }}" {% if selected.cpu.id == cpu.id %}selected{% endif %}>
+                        {{ cpu.name }} — {{ cpu.price }} ₽ (Socket: {{ cpu.socket }})
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <!-- Правая панель: итог -->
-            <div class="result-panel">
-                <div class="result-card">
-                    <h3><i class="fas fa-chart-simple"></i> Итог сборки</h3>
-                    {% if total_price is not None %}
-                        <div class="total-price">{{ total_price }} <span>₽</span></div>
-                        <ul class="selected-list">
-                            <li><i class="fas fa-microchip"></i> <strong>CPU:</strong> {{ selected.cpu.name }}</li>
-                            <li><i class="fas fa-server"></i> <strong>MB:</strong> {{ selected.mb.name }}</li>
-                            <li><i class="fas fa-tv"></i> <strong>GPU:</strong> {{ selected.gpu.name }}</li>
-                            <li><i class="fas fa-memory"></i> <strong>RAM:</strong> {{ selected.ram.name }}</li>
-                            <li><i class="fas fa-hdd"></i> <strong>Диск:</strong> {{ selected.storage.name }}</li>
-                            <li><i class="fas fa-bolt"></i> <strong>БП:</strong> {{ selected.psu.name }}</li>
-                        </ul>
-                        {% if errors %}
-                            <div class="compat-error">
-                                <i class="fas fa-exclamation-triangle"></i> Ошибки совместимости:
-                                <ul>
-                                {% for error in errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                                </ul>
-                            </div>
-                        {% else %}
-                            <div class="compat-success">
-                                <i class="fas fa-check-circle"></i> Совместимость подтверждена
-                            </div>
-                        {% endif %}
+            <!-- Материнская плата -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-server"></i>
+                    <h3>Материнская плата</h3>
+                </div>
+                <select name="motherboard" required>
+                    <option value="" disabled selected>-- Выберите материнскую плату --</option>
+                    {% for mb in motherboards %}
+                    <option value="{{ mb.id }}" {% if selected.mb.id == mb.id %}selected{% endif %}>
+                        {{ mb.name }} — {{ mb.price }} ₽ (Socket: {{ mb.socket }} | {{ mb.form_factor }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Видеокарта -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-tv"></i>
+                    <h3>Видеокарта (GPU)</h3>
+                </div>
+                <select name="gpu" required>
+                    <option value="" disabled selected>-- Выберите видеокарту --</option>
+                    {% for gpu in gpus %}
+                    <option value="{{ gpu.id }}" {% if selected.gpu.id == gpu.id %}selected{% endif %}>
+                        {{ gpu.name }} — {{ gpu.price }} ₽
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- RAM -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-memory"></i>
+                    <h3>Оперативная память</h3>
+                </div>
+                <select name="ram" required>
+                    <option value="" disabled selected>-- Выберите ОЗУ --</option>
+                    {% for ram in rams %}
+                    <option value="{{ ram.id }}" {% if selected.ram.id == ram.id %}selected{% endif %}>
+                        {{ ram.name }} ({{ ram.capacity_gb }} ГБ, {{ ram.ram_type }}) — {{ ram.price }} ₽
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Накопитель -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-hdd"></i>
+                    <h3>Накопитель</h3>
+                </div>
+                <select name="storage" required>
+                    <option value="" disabled selected>-- Выберите диск --</option>
+                    {% for storage in storages %}
+                    <option value="{{ storage.id }}" {% if selected.storage.id == storage.id %}selected{% endif %}>
+                        {{ storage.name }} ({{ storage.capacity_gb }} ГБ, {{ storage.storage_type }}, {{ storage.interface }}) — {{ storage.price }} ₽
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Блок питания -->
+            <div class="component-card">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Блок питания</h3>
+                </div>
+                <select name="psu" required>
+                    <option value="" disabled selected>-- Выберите БП --</option>
+                    {% for psu in psus %}
+                    <option value="{{ psu.id }}" {% if selected.psu.id == psu.id %}selected{% endif %}>
+                        {{ psu.name }} ({{ psu.wattage }} Вт, {{ psu.efficiency_rating }}) — {{ psu.price }} ₽
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-calculator"></i> Рассчитать и проверить
+            </button>
+        </div>
+
+        <div class="result-panel">
+            <div class="result-card">
+                <h3><i class="fas fa-chart-simple"></i> Итог сборки</h3>
+                {% if total_price is not None %}
+                    <div class="total-price">{{ total_price }} <span>₽</span></div>
+                    <ul class="selected-list">
+                        <li><i class="fas fa-microchip"></i> <strong>CPU:</strong> {{ selected.cpu.name }}</li>
+                        <li><i class="fas fa-server"></i> <strong>MB:</strong> {{ selected.mb.name }}</li>
+                        <li><i class="fas fa-tv"></i> <strong>GPU:</strong> {{ selected.gpu.name }}</li>
+                        <li><i class="fas fa-memory"></i> <strong>RAM:</strong> {{ selected.ram.name }}</li>
+                        <li><i class="fas fa-hdd"></i> <strong>Диск:</strong> {{ selected.storage.name }}</li>
+                        <li><i class="fas fa-bolt"></i> <strong>БП:</strong> {{ selected.psu.name }}</li>
+                    </ul>
+                    <form method="post" action="{% url 'save_build' %}" style="margin-top: 16px;">
+                        {% csrf_token %}
+                        <input type="text" name="build_name" placeholder="Название сборки" required style="width: 100%; padding: 10px; border-radius: 20px; border: 1px solid #cbd5e1; margin-bottom: 10px;">
+                        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Сохранить сборку</button>
+                    </form>
+                    {% if errors %}
+                        <div class="compat-error">
+                            <i class="fas fa-exclamation-triangle"></i> Ошибки совместимости:
+                            <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                        </div>
                     {% else %}
-                        <div style="color: #64748b; padding: 24px 0; text-align: center;">
-                            <i class="fas fa-mouse-pointer" style="font-size: 2rem; opacity: 0.5;"></i>
-                            <p style="margin-top: 12px;">Выберите детали и нажмите «Рассчитать»</p>
+                        <div class="compat-success">
+                            <i class="fas fa-check-circle"></i> Совместимость подтверждена
                         </div>
                     {% endif %}
-                </div>
+                {% else %}
+                    <div style="color: #64748b; padding: 24px 0; text-align: center;">
+                        <i class="fas fa-mouse-pointer" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p style="margin-top: 12px;">Выберите детали и нажмите «Рассчитать»</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </form>
-</div>
-
-<footer>
-    <i class="fas fa-dragon"></i> PC Craft — конфигуратор с проверкой совместимости
-</footer>
-
-</body>
-</html>
+    </div>
+</form>
+{% endblock %}
