@@ -1,0 +1,100 @@
+{% extends "builder/base.html" %}
+{% block content %}
+<h1>Каталог комплектующих</h1>
+
+<style>
+    .catalog-section { margin-bottom: 40px; }
+    .catalog-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+    .catalog-card { background: white; border-radius: 20px; padding: 16px; width: 220px; border: 1px solid #e2e8f0; }
+    .catalog-card h3 { margin: 0 0 8px; }
+    .catalog-card p { margin: 4px 0; color: #475569; }
+    .price { font-weight: bold; color: #3b82f6; }
+</style>
+
+<div class="catalog-section">
+    <h2>Процессоры</h2>
+    <div class="catalog-grid">
+        {% for cpu in cpus %}
+        <div class="catalog-card">
+            <h3>{{ cpu.name }}</h3>
+            <p>Сокет: {{ cpu.socket }}</p>
+            <p>Тепловыделение: {{ cpu.tdp }} Вт</p>
+            <p class="price">{{ cpu.price }} ₽</p>
+            <a href="{% url 'component_detail' 'cpu' cpu.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="catalog-section">
+    <h2>Материнские платы</h2>
+    <div class="catalog-grid">
+        {% for mb in motherboards %}
+        <div class="catalog-card">
+            <h3>{{ mb.name }}</h3>
+            <p>Сокет: {{ mb.socket }} | {{ mb.form_factor }}</p>
+            <p>RAM: {{ mb.ram_type }} ({{ mb.ram_slots }} слотов)</p>
+            <p class="price">{{ mb.price }} ₽</p>
+            <a href="{% url 'component_detail' 'motherboard' mb.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Аналогично для GPU, RAM, Storage, PSU (скопируй блоки) -->
+<div class="catalog-section">
+    <h2>Видеокарты</h2>
+    <div class="catalog-grid">
+        {% for gpu in gpus %}
+        <div class="catalog-card">
+            <h3>{{ gpu.name }}</h3>
+            <p>Длина: {{ gpu.length_mm }} мм</p>
+            <p class="price">{{ gpu.price }} ₽</p>
+            <a href="{% url 'component_detail' 'gpu' gpu.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="catalog-section">
+    <h2>Оперативная память</h2>
+    <div class="catalog-grid">
+        {% for ram in rams %}
+        <div class="catalog-card">
+            <h3>{{ ram.name }}</h3>
+            <p>{{ ram.capacity_gb }} ГБ, {{ ram.ram_type }}</p>
+            <p class="price">{{ ram.price }} ₽</p>
+            <a href="{% url 'component_detail' 'ram' ram.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="catalog-section">
+    <h2>Накопители</h2>
+    <div class="catalog-grid">
+        {% for storage in storages %}
+        <div class="catalog-card">
+            <h3>{{ storage.name }}</h3>
+            <p>{{ storage.capacity_gb }} ГБ, {{ storage.storage_type }} ({{ storage.interface }})</p>
+            <p class="price">{{ storage.price }} ₽</p>
+            <a href="{% url 'component_detail' 'storage' storage.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="catalog-section">
+    <h2>Блоки питания</h2>
+    <div class="catalog-grid">
+        {% for psu in psus %}
+        <div class="catalog-card">
+            <h3>{{ psu.name }}</h3>
+            <p>{{ psu.wattage }} Вт, {{ psu.efficiency_rating }}</p>
+            <p class="price">{{ psu.price }} ₽</p>
+            <a href="{% url 'component_detail' 'psu' psu.id %}">Подробнее</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

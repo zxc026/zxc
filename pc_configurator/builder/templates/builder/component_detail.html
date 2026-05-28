@@ -1,0 +1,15 @@
+{% extends "builder/base.html" %}
+{% block content %}
+<div style="background: white; border-radius: 24px; padding: 24px;">
+    <h1>{{ component.name }}</h1>
+    <p><strong>Тип:</strong> {{ type|upper }}</p>
+    <p><strong>Цена:</strong> {{ component.price }} ₽</p>
+    {% if component.socket %}<p><strong>Сокет:</strong> {{ component.socket }}</p>{% endif %}
+    {% if component.form_factor %}<p><strong>Форм-фактор:</strong> {{ component.form_factor }}</p>{% endif %}
+    {% if component.ram_type %}<p><strong>Тип RAM:</strong> {{ component.ram_type }}</p>{% endif %}
+    {% if component.capacity_gb %}<p><strong>Объём:</strong> {{ component.capacity_gb }} ГБ</p>{% endif %}
+    {% if component.wattage %}<p><strong>Мощность:</strong> {{ component.wattage }} Вт</p>{% endif %}
+    {% if component.tdp %}<p><strong>TDP:</strong> {{ component.tdp }} Вт</p>{% endif %}
+    <a href="{% url 'catalog' %}">← Назад в каталог</a>
+</div>
+{% endblock %}

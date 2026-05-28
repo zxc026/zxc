@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.urls import path
-from builder import views   # импортируем views
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.configurator, name='configurator'),   # главная страница будет конфигуратором
+    path('', include('builder.urls')),
 ]
