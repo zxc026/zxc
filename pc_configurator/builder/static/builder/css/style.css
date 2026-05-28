@@ -12,7 +12,7 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    color: #1e293b;
+    color: #f1f5f9;
 }
 
 .container {
@@ -56,14 +56,14 @@ body {
 }
 
 .nav-links a {
-    color: #1e293b;
+    color: #e2e8f0;
     text-decoration: none;
     font-weight: 600;
     transition: all 0.2s ease;
 }
 
 .nav-links a:hover {
-    color: #3b82f6;
+    color: #ffffff;
 }
 
 /* HERO BLOCK (для главной и др.) */
